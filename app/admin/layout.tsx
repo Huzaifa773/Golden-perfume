@@ -12,8 +12,11 @@ import {
   ShieldCheck,
   Sparkles,
   ExternalLink,
+  Menu,
+  X,
 } from "lucide-react";
 import { authOptions } from "@/lib/auth";
+import { useState } from "react"; // Note: Agar "use client" nahi hai toh isay hatayein, lekin hamburger ke liye "use client" chahiye hoga.
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -33,7 +36,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex min-h-screen bg-obsidian-950 text-ivory">
       {/* VIP Admin Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-gold/20 bg-obsidian-900/90 backdrop-blur-xl flex flex-col justify-between">
+      <aside className="w-64 flex-shrink-0 border-r border-gold/20 bg-obsidian-900/90 backdrop-blur-xl flex flex-col justify-between hidden md:flex">
         <div>
           {/* Logo & Admin Header */}
           <div className="border-b border-neutral-800 p-6 space-y-2">
@@ -88,7 +91,32 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       {/* Admin Content Area */}
-      <main className="flex-1 overflow-x-auto p-6 md:p-10">{children}</main>
+      <main className="flex-1 overflow-x-auto p-4 md:p-6 lg:p-10">
+        {/* Mobile Hamburger Menu (Sirf mobile par nazar aayega) */}
+        <div className="md:hidden mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg border border-gold/60 bg-gold/20 flex items-center justify-center text-gold font-serif font-bold text-sm">
+              MC
+            </div>
+            <span className="font-serif text-sm font-bold tracking-widest text-gold">MAISON CHARCOAL</span>
+          </div>
+          {/* Mobile par navigation ke liye simple links */}
+          <div className="flex gap-2 overflow-x-auto">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-1.5 rounded-lg bg-obsidian-900 border border-neutral-800 px-3 py-2 text-[10px] font-semibold text-neutral-300 hover:text-gold whitespace-nowrap"
+              >
+                <item.icon size={12} className="text-gold" />
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {children}
+      </main>
     </div>
   );
 }

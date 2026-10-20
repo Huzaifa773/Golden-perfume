@@ -1,3 +1,4 @@
+// middleware.ts
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -6,8 +7,7 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // Only ADMIN role may access /admin/*. Everyone else (including
-    // logged-out visitors and regular customers) is redirected away.
+    // Only ADMIN role may access /admin/*
     if (pathname.startsWith("/admin")) {
       if (!token || token.role !== "ADMIN") {
         const url = req.nextUrl.clone();
@@ -21,15 +21,12 @@ export default withAuth(
   },
   {
     callbacks: {
-      // Returning true here means "let the middleware function above run".
-      // We handle the actual authorization logic there so we can give
-      // different treatment to /dashboard vs /admin.
       authorized: ({ token, req }) => {
         if (req.nextUrl.pathname.startsWith("/dashboard")) {
           return !!token;
         }
         if (req.nextUrl.pathname.startsWith("/admin")) {
-          return true; // checked in the middleware function above
+          return true;
         }
         return true;
       },

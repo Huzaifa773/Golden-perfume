@@ -1,116 +1,163 @@
-"use client";
-
+// components/Footer.tsx
 import Link from "next/link";
-import { Instagram, Facebook, Twitter, Mail, ShieldCheck, Truck, Sparkles, Award } from "lucide-react";
+import { Sparkles, Phone, Mail, MapPin, ShieldCheck, Heart, ArrowUpRight } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-obsidian-950 border-t border-gold/20 text-neutral-300">
-      {/* Trust Badges Strip */}
-      <div className="border-b border-neutral-800/80 bg-obsidian-900/50 py-8 px-4 md:px-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
-          <div className="flex items-center gap-3">
-            <Truck className="h-8 w-8 text-gold flex-shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ivory">Complimentary Delivery</p>
-              <p className="text-[11px] text-neutral-400">On all orders exceeding PKR 15,000</p>
+    <footer className="bg-obsidian-950 border-t border-gold/20 pt-16 pb-10 text-neutral-300 relative overflow-hidden">
+      {/* Decorative Golden Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-gold/10 to-transparent blur-3xl pointer-events-none" />
+
+      <div className="mx-auto max-w-7xl px-4 md:px-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-neutral-800">
+          {/* Brand Info */}
+          <div className="lg:col-span-2 space-y-4">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <div className="h-10 w-10 rounded-full border border-gold/60 bg-gold/20 flex items-center justify-center text-gold font-serif font-bold text-lg shadow-gold-glow">
+                MC
+              </div>
+              <div className="flex flex-col">
+                <span className="font-serif text-xl tracking-[0.16em] font-bold text-ivory">
+                  MAISON <span className="text-gold">CHARCOAL</span>
+                </span>
+                <span className="text-[9px] uppercase tracking-[0.3em] text-neutral-400">
+                  Haute Parfumerie & Pure Attars
+                </span>
+              </div>
+            </Link>
+
+            <p className="text-xs text-neutral-400 leading-relaxed max-w-sm">
+              Artisanal French & Arabian luxury fragrances, handcrafted with the world&apos;s rarest natural essences, pure non-alcoholic attars, and aged Cambodian oud oils. Designed for the connoisseur.
+            </p>
+
+            <div className="pt-2 flex flex-col gap-2 text-xs">
+              <a
+                href="https://wa.me/923148759109"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-neutral-300 hover:text-gold transition-colors"
+              >
+                <Phone size={14} className="text-gold" />
+                <span>VIP WhatsApp: +92 314 8759109</span>
+              </a>
+              <div className="flex items-center gap-2 text-neutral-400">
+                <Mail size={14} className="text-gold" />
+                <span>concierge@maisoncharcoal.com</span>
+              </div>
+              <div className="flex items-center gap-2 text-neutral-400">
+                <MapPin size={14} className="text-gold" />
+                <span>KDA Scheme 1, Karachi &bull; F-7 Markaz, Islamabad</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="h-8 w-8 text-gold flex-shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ivory">100% Authentic Guarantee</p>
-              <p className="text-[11px] text-neutral-400">Directly sourced French & Oriental oils</p>
-            </div>
+
+          {/* Luxury Collections */}
+          <div>
+            <h4 className="font-serif text-sm font-semibold uppercase tracking-widest text-gold mb-4">
+              Collections
+            </h4>
+            <ul className="space-y-2.5 text-xs">
+              <li>
+                <Link href="/shop" className="text-neutral-400 hover:text-gold transition-colors">
+                  All Luxury Perfumes
+                </Link>
+              </li>
+              <li>
+                <Link href="/men" className="text-neutral-400 hover:text-gold transition-colors">
+                  Men&apos;s Royal Fragrances
+                </Link>
+              </li>
+              <li>
+                <Link href="/women" className="text-neutral-400 hover:text-gold transition-colors">
+                  Women&apos;s Floral & Oriental
+                </Link>
+              </li>
+              <li>
+                <Link href="/attar" className="text-neutral-400 hover:text-gold transition-colors">
+                  Pure Alcohol-Free Attars
+                </Link>
+              </li>
+              <li>
+                <Link href="/attar" className="text-neutral-400 hover:text-gold transition-colors">
+                  Aged Cambodian Oud
+                </Link>
+              </li>
+            </ul>
           </div>
-          <div className="flex items-center gap-3">
-            <Sparkles className="h-8 w-8 text-gold flex-shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ivory">Complimentary Vials</p>
-              <p className="text-[11px] text-neutral-400">2 discovery samples with each order</p>
-            </div>
+
+          {/* Boutique Services */}
+          <div>
+            <h4 className="font-serif text-sm font-semibold uppercase tracking-widest text-gold mb-4">
+              Client Care
+            </h4>
+            <ul className="space-y-2.5 text-xs">
+              <li>
+                <Link href="/about" className="text-neutral-400 hover:text-gold transition-colors">
+                  Our Artisanal Heritage
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-neutral-400 hover:text-gold transition-colors">
+                  Contact Concierge
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard" className="text-neutral-400 hover:text-gold transition-colors">
+                  Track My Order & Parcel
+                </Link>
+              </li>
+              <li>
+                <Link href="/signup" className="text-neutral-400 hover:text-gold transition-colors">
+                  Join VIP Scent Club
+                </Link>
+              </li>
+              <li>
+                <Link href="/login" className="text-neutral-400 hover:text-gold transition-colors">
+                  Account Login
+                </Link>
+              </li>
+            </ul>
           </div>
-          <div className="flex items-center gap-3">
-            <Award className="h-8 w-8 text-gold flex-shrink-0" />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-ivory">VIP Concierge Care</p>
-              <p className="text-[11px] text-neutral-400">Personalized scent advice 7 days/week</p>
+
+          {/* Secure Payment Methods in Pakistan */}
+          <div>
+            <h4 className="font-serif text-sm font-semibold uppercase tracking-widest text-gold mb-4">
+              Accepted Payments
+            </h4>
+            <p className="text-xs text-neutral-400 mb-3 leading-relaxed">
+              Fast, 100% verified Pakistani payment gateways:
+            </p>
+            <div className="flex flex-col gap-2 text-xs">
+              <span className="px-3 py-1.5 rounded-lg bg-obsidian-900 border border-gold/30 text-gold font-medium flex items-center justify-between">
+                <span>Easypaisa</span>
+                <span className="text-[10px] text-neutral-400">Mobile Account</span>
+              </span>
+              <span className="px-3 py-1.5 rounded-lg bg-obsidian-900 border border-gold/30 text-gold font-medium flex items-center justify-between">
+                <span>JazzCash</span>
+                <span className="text-[10px] text-neutral-400">Instant Pay</span>
+              </span>
+              <span className="px-3 py-1.5 rounded-lg bg-obsidian-900 border border-gold/30 text-gold font-medium flex items-center justify-between">
+                <span>Bank Transfer</span>
+                <span className="text-[10px] text-neutral-400">Direct Deposit</span>
+              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Footer Links */}
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 md:grid-cols-5 md:px-8">
-        <div className="md:col-span-2 space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full border border-gold/50 bg-gold/20 flex items-center justify-center text-gold font-serif text-sm font-bold shadow-gold-glow">
-              MC
-            </div>
-            <span className="font-serif text-xl tracking-[0.2em] font-semibold text-ivory">
-              MAISON <span className="text-gold">CHARCOAL</span>
-            </span>
-          </div>
-          <p className="text-xs leading-relaxed text-neutral-400 max-w-sm">
-            Maison Charcoal is an artisanal fragrance house creating extraits de parfum, rare Cambodian ouds,
-            and pure concentrated attars. Designed for those who appreciate timeless distinction.
+        {/* Bottom Copyright & Guarantee */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
+          <p>
+            &copy; {new Date().getFullYear()} Maison Charcoal Haute Parfumerie. All rights reserved.
           </p>
-          <div className="flex gap-4 pt-2">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="h-9 w-9 rounded-full bg-obsidian-800 border border-neutral-800 flex items-center justify-center text-neutral-300 hover:text-gold hover:border-gold transition-colors">
-              <Instagram size={16} />
-            </a>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="h-9 w-9 rounded-full bg-obsidian-800 border border-neutral-800 flex items-center justify-center text-neutral-300 hover:text-gold hover:border-gold transition-colors">
-              <Facebook size={16} />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="h-9 w-9 rounded-full bg-obsidian-800 border border-neutral-800 flex items-center justify-center text-neutral-300 hover:text-gold hover:border-gold transition-colors">
-              <Twitter size={16} />
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold">The House</h4>
-          <ul className="space-y-2.5 text-xs">
-            <li><Link href="/" className="hover:text-gold transition-colors">Home Experience</Link></li>
-            <li><Link href="/about" className="hover:text-gold transition-colors">Artisanal Heritage</Link></li>
-            <li><Link href="/collections" className="hover:text-gold transition-colors">Exclusive Collections</Link></li>
-            <li><Link href="/quiz" className="hover:text-gold transition-colors">Scent Consultation Quiz</Link></li>
-            <li><Link href="/contact" className="hover:text-gold transition-colors">Boutiques & Concierge</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold">Catalog</h4>
-          <ul className="space-y-2.5 text-xs">
-            <li><Link href="/products" className="hover:text-gold transition-colors">All Perfumes</Link></li>
-            <li><Link href="/products?category=mens-perfumes" className="hover:text-gold transition-colors">Men's Extrait</Link></li>
-            <li><Link href="/products?category=womens-perfumes" className="hover:text-gold transition-colors">Women's Collection</Link></li>
-            <li><Link href="/products?category=oud" className="hover:text-gold transition-colors">Royal Oud Oils</Link></li>
-            <li><Link href="/products?category=attar" className="hover:text-gold transition-colors">Traditional Attar</Link></li>
-            <li><Link href="/products?category=gift-sets" className="hover:text-gold transition-colors">Prestige Gift Boxes</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold">Client Services</h4>
-          <ul className="space-y-2.5 text-xs">
-            <li><Link href="/dashboard" className="hover:text-gold transition-colors">VIP Dashboard</Link></li>
-            <li><Link href="/dashboard/orders" className="hover:text-gold transition-colors">Order History</Link></li>
-            <li><Link href="/track-order" className="hover:text-gold transition-colors">Track Your Shipment</Link></li>
-            <li><Link href="/wishlist" className="hover:text-gold transition-colors">Saved Fragrances</Link></li>
-            <li><Link href="/cart" className="hover:text-gold transition-colors">Shopping Bag</Link></li>
-            <li><Link href="/contact#faq" className="hover:text-gold transition-colors">Delivery & Returns FAQ</Link></li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-neutral-800/80 bg-obsidian-950 py-6 px-4 md:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500">
-          <p>© {new Date().getFullYear()} Maison Charcoal Haute Parfumerie. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <span>Karachi &bull; Lahore &bull; Islamabad</span>
-            <span>Secure Cash on Delivery &bull; Bank Transfer &bull; JazzCash</span>
+            <span className="flex items-center gap-1.5 text-gold/80">
+              <ShieldCheck size={14} />
+              100% Authentic Guaranteed
+            </span>
+            <span className="flex items-center gap-1.5 text-neutral-400">
+              <Sparkles size={14} className="text-gold" />
+              Handcrafted in Grasse & Dubai
+            </span>
           </div>
         </div>
       </div>

@@ -1,7 +1,19 @@
+// app/dashboard/layout.tsx
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { User, Package, Heart, MapPin, Settings, Sparkles, ArrowLeft, Truck, Award } from "lucide-react";
+import {
+  User,
+  Package,
+  Heart,
+  MapPin,
+  Settings,
+  Sparkles,
+  ArrowLeft,
+  Truck,
+  Award,
+  XCircle,
+} from "lucide-react";
 import { authOptions } from "@/lib/auth";
 
 const NAV_ITEMS = [
@@ -11,9 +23,15 @@ const NAV_ITEMS = [
   { href: "/wishlist", label: "Saved Creations", icon: Heart },
   { href: "/dashboard/addresses", label: "Delivery Addresses", icon: MapPin },
   { href: "/dashboard/settings", label: "Patron Settings", icon: Settings },
+  // ✅ NAYA: Cancel Order
+  { href: "/dashboard/cancel-order", label: "Cancel Order", icon: XCircle },
 ];
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login?callbackUrl=/dashboard");
 
@@ -24,7 +42,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="mb-10 rounded-3xl border border-gold/40 bg-gradient-to-r from-obsidian-900 via-obsidian-850 to-obsidian-900 p-6 md:p-8 backdrop-blur-xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl border-2 border-gold bg-gradient-to-br from-gold/30 to-obsidian-950 flex items-center justify-center text-gold font-serif text-2xl md:text-3xl font-bold shadow-gold-glow flex-shrink-0">
-              {session.user.name ? session.user.name.charAt(0).toUpperCase() : "M"}
+              {session.user.name
+                ? session.user.name.charAt(0).toUpperCase()
+                : "M"}
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -40,15 +60,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <h1 className="font-serif text-2xl md:text-3xl font-bold text-ivory">
                 {session.user.name}
               </h1>
-              <p className="text-xs text-neutral-400 font-mono">{session.user.email}</p>
+              <p className="text-xs text-neutral-400 font-mono">
+                {session.user.email}
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 border-t md:border-t-0 md:border-l border-neutral-800 pt-4 md:pt-0 md:pl-8 text-center">
             <div className="p-3 rounded-2xl bg-obsidian-800/80 border border-gold/30">
-              <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Olfactory Privilège</p>
-              <p className="font-serif text-xl md:text-2xl font-bold text-gold mt-0.5">1,250 Pts</p>
-              <p className="text-[10px] text-emerald-400 mt-0.5">Tier: Imperial Gold</p>
+              <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">
+                Olfactory Privilège
+              </p>
+              <p className="font-serif text-xl md:text-2xl font-bold text-gold mt-0.5">
+                1,250 Pts
+              </p>
+              <p className="text-[10px] text-emerald-400 mt-0.5">
+                Tier: Imperial Gold
+              </p>
             </div>
           </div>
         </div>

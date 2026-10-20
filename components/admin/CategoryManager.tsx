@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Trash2, Loader2 } from "lucide-react";
+import { alertConfirm, alertToast, alertError } from "@/lib/alerts";
 
 export interface CategoryRow {
   id: string;
@@ -62,17 +63,24 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this category?")) return;
+    const confirmed = await alertConfirm(
+      "Delete Category?",
+      "Are you sure you want to delete this category? Products assigned to it may need reassignment.",
+      "Delete",
+      "Cancel",
+      "warning"
+    );
+    if (!confirmed) return;
     setBusyId(id);
     try {
       const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to delete");
       setCategories((c) => c.filter((cat) => cat.id !== id));
-      toast.success("Category deleted");
+      alertToast("Category deleted successfully", "success");
       router.refresh();
     } catch (err: any) {
-      toast.error(err.message);
+      alertError("Deletion Failed", err.message || "Failed to delete category");
     } finally {
       setBusyId(null);
     }

@@ -1,7 +1,17 @@
+/* ============================================================
+   Maison Charcoal - Global Styles
+   ============================================================ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* SweetAlert2 CSS */
+@import "sweetalert2/dist/sweetalert2.min.css";
+
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
 :root {
   --font-playfair: "Playfair Display", Georgia, serif;
   --font-inter: "Inter", Helvetica, Arial, sans-serif;
@@ -11,6 +21,9 @@
   --obsidian-dark: #09090b;
 }
 
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
 * {
   box-sizing: border-box;
 }
@@ -26,7 +39,9 @@ body {
   overflow-x: hidden;
 }
 
-/* Luxury Custom Scrollbar */
+/* ============================================================
+   LUXURY CUSTOM SCROLLBAR
+   ============================================================ */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -42,12 +57,15 @@ body {
   background: #f5d061;
 }
 
+/* ============================================================
+   COMPONENT LAYER
+   ============================================================ */
 @layer components {
-  /* VIP Buttons */
+  /* ---------- VIP Buttons ---------- */
   .btn-primary {
     @apply relative inline-flex items-center justify-center gap-2 overflow-hidden bg-gradient-to-r from-gold-600 via-gold to-gold-400 text-obsidian-950 px-6 py-3 rounded-md font-semibold tracking-wide transition-all duration-300 hover:shadow-gold-glow hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none;
   }
-  
+
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 bg-obsidian-800/90 text-gold-300 border border-gold/40 px-6 py-3 rounded-md font-medium tracking-wide transition-all duration-300 hover:bg-gold/15 hover:border-gold hover:text-gold-200 active:scale-[0.98] disabled:opacity-50;
   }
@@ -60,7 +78,7 @@ body {
     @apply inline-flex items-center justify-center gap-2 text-neutral-300 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:text-gold hover:bg-white/5;
   }
 
-  /* VIP Inputs */
+  /* ---------- VIP Inputs ---------- */
   .input-field {
     @apply w-full border border-neutral-700/80 bg-obsidian-900/90 text-ivory px-4 py-3 rounded-md text-sm placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold transition-all duration-200;
   }
@@ -69,7 +87,7 @@ body {
     @apply w-full border border-neutral-700/80 bg-obsidian-900 text-ivory px-4 py-3 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold transition-all duration-200;
   }
 
-  /* VIP Titles */
+  /* ---------- VIP Titles ---------- */
   .section-title {
     @apply font-serif text-3xl md:text-4xl text-ivory tracking-tight;
   }
@@ -78,7 +96,7 @@ body {
     @apply bg-gradient-to-r from-gold-300 via-gold to-gold-500 bg-clip-text text-transparent;
   }
 
-  /* VIP Cards */
+  /* ---------- VIP Cards ---------- */
   .card-luxury {
     @apply relative bg-obsidian-900/80 border border-neutral-800/80 rounded-xl overflow-hidden transition-all duration-500 hover:border-gold/50 hover:shadow-gold-card hover:-translate-y-1.5 backdrop-blur-sm;
   }
@@ -96,11 +114,14 @@ body {
   }
 }
 
-/* Card Image Zoom & Shine Hover Effects */
+/* ============================================================
+   CARD IMAGE ZOOM & SHINE HOVER EFFECTS
+   ============================================================ */
 .card-shine {
   position: relative;
   overflow: hidden;
 }
+
 .card-shine::after {
   content: "";
   position: absolute;
@@ -118,16 +139,20 @@ body {
   transition: transform 0.8s ease;
   pointer-events: none;
 }
+
 .card-luxury:hover .card-shine::after {
   transform: rotate(30deg) translateY(100%);
 }
 
-/* VIP SweetAlert2 Overrides */
+/* ============================================================
+   VIP SWEETALERT2 OVERRIDES
+   ============================================================ */
 .swal2-popup.vip-swal {
   background: #101014 !important;
   border: 1px solid rgba(212, 175, 55, 0.45) !important;
   border-radius: 16px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(212, 175, 55, 0.25) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(212, 175, 55, 0.25) !important;
   color: #f4f1ea !important;
   padding: 24px 28px !important;
   font-family: var(--font-inter), sans-serif !important;
@@ -187,7 +212,7 @@ body {
   color: #d4af37 !important;
 }
 
-.swal2-popup.vip-swal .swal2-icon.swal2-success [class^='swal2-success-line'] {
+.swal2-popup.vip-swal .swal2-icon.swal2-success [class^="swal2-success-line"] {
   background-color: #d4af37 !important;
 }
 

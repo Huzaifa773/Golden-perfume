@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ProductCard, ProductCardData } from "@/components/ProductCard";
+import { ProductCard } from "@/components/ProductCard";
 import { Heart, Sparkles } from "lucide-react";
 
 export const metadata = {

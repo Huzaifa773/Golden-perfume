@@ -3,6 +3,28 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+// Local product images (17 available)
+const P = "/images/products";
+const LOCAL_IMAGES = [
+  `${P}/p1.jpg`,
+  `${P}/p2.jpg`,
+  `${P}/p3.jpg`,
+  `${P}/p4.jpg`,
+  `${P}/p5.jpg`,
+  `${P}/p6.jpg`,
+  `${P}/p7.jpg`,
+  `${P}/p8.jpg`,
+  `${P}/p9.jpg`,
+  `${P}/p10.jpg`,
+  `${P}/p11.jpg`,
+  `${P}/p12.jpg`,
+  `${P}/p13.jpg`,
+  `${P}/p14.jpg`,
+  `${P}/p15.jpg`,
+  `${P}/p16.jpg`,
+  `${P}/p17.jpg`,
+];
+
 // Demo credentials are read from env so nothing real is hard-coded.
 // Falls back to clearly-marked placeholders if .env is not configured yet.
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@demo-perfume.test";
@@ -51,7 +73,7 @@ async function main() {
       isFeatured: true,
       isBestSeller: true,
       categorySlug: "mens-perfumes",
-      images: ["https://images.unsplash.com/photo-1592945403244-b3fbafd7f539"],
+      images: [`${P}/p1.jpg`],
     },
     {
       name: "Golden Iris",
@@ -67,7 +89,7 @@ async function main() {
       isFeatured: true,
       isNewArrival: true,
       categorySlug: "womens-perfumes",
-      images: ["https://images.unsplash.com/photo-1587017539504-67cfbddac569"],
+      images: [`${P}/p2.jpg`],
     },
     {
       name: "Velvet Oud Royale",
@@ -83,7 +105,7 @@ async function main() {
       isFeatured: true,
       isBestSeller: true,
       categorySlug: "oud",
-      images: ["https://images.unsplash.com/photo-1615368144592-0e5f56ec1a68"],
+      images: [`${P}/p3.jpg`],
     },
     {
       name: "Musk Al Ameer Attar",
@@ -98,7 +120,7 @@ async function main() {
       stock: 60,
       isNewArrival: true,
       categorySlug: "attar",
-      images: ["https://images.unsplash.com/photo-1592945403244-b3fbafd7f539"],
+      images: [`${P}/p4.jpg`],
     },
     {
       name: "Citrus Neutral",
@@ -113,7 +135,7 @@ async function main() {
       stock: 55,
       isBestSeller: true,
       categorySlug: "unisex-perfumes",
-      images: ["https://images.unsplash.com/photo-1541643600914-78b084683601"],
+      images: [`${P}/p5.jpg`],
     },
     {
       name: "Royal Duo Gift Set",
@@ -128,7 +150,7 @@ async function main() {
       stock: 20,
       isFeatured: true,
       categorySlug: "gift-sets",
-      images: ["https://images.unsplash.com/photo-1523293182086-7651a899d37f"],
+      images: [`${P}/p6.jpg`],
     },
     {
       name: "Amber Nocturne",
@@ -143,7 +165,7 @@ async function main() {
       stock: 30,
       isBestSeller: true,
       categorySlug: "mens-perfumes",
-      images: ["https://images.unsplash.com/photo-1594035910387-fea47794261f"],
+      images: [`${P}/p7.jpg`],
     },
     {
       name: "Rose Cashmere",
@@ -158,7 +180,7 @@ async function main() {
       stock: 18,
       isFeatured: true,
       categorySlug: "womens-perfumes",
-      images: ["https://images.unsplash.com/photo-1615634260167-c8cdede054de"],
+      images: [`${P}/p8.jpg`],
     },
     {
       name: "Sultan's Oud Extrait",
@@ -173,7 +195,7 @@ async function main() {
       stock: 8,
       isFeatured: true,
       categorySlug: "premium-collection",
-      images: ["https://images.unsplash.com/photo-1592945403244-b3fbafd7f539"],
+      images: [`${P}/p9.jpg`],
     },
     {
       name: "Fresh Linen Mist",
@@ -188,7 +210,7 @@ async function main() {
       stock: 80,
       isNewArrival: true,
       categorySlug: "unisex-perfumes",
-      images: ["https://images.unsplash.com/photo-1596462502278-27bfdc403348"],
+      images: [`${P}/p10.jpg`],
     },
     {
       name: "Saffron Oud Attar",
@@ -203,7 +225,7 @@ async function main() {
       stock: 35,
       isNewArrival: true,
       categorySlug: "attar",
-      images: ["https://images.unsplash.com/photo-1615368144592-0e5f56ec1a68"],
+      images: [`${P}/p11.jpg`],
     },
     {
       name: "Jasmine Nightfall",
@@ -218,7 +240,7 @@ async function main() {
       stock: 22,
       isBestSeller: true,
       categorySlug: "womens-perfumes",
-      images: ["https://images.unsplash.com/photo-1587017539504-67cfbddac569"],
+      images: [`${P}/p12.jpg`],
     },
   ];
 
@@ -236,11 +258,11 @@ async function main() {
     for (let i = 0; i < images.length; i++) {
       await prisma.productImage.upsert({
         where: { id: `${product.id}-seed-${i}` },
-        update: {},
+        update: { url: images[i] },   // force update to local path on re-seed
         create: {
           id: `${product.id}-seed-${i}`,
           productId: product.id,
-          url: `${images[i]}?w=800&q=80&auto=format`,
+          url: images[i],
           altText: product.name,
           position: i,
         },
