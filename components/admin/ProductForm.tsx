@@ -82,7 +82,16 @@ export function ProductForm({
 }) {
   const router = useRouter();
   const [form, setForm] = useState<ProductFormData>(
-    initial || { ...emptyForm, categoryId: categories[0]?.id || "" }
+    initial
+      ? {
+          ...emptyForm,
+          ...initial,
+          variants:
+            initial.variants && initial.variants.length > 0
+              ? initial.variants
+              : [{ ...emptyVariant }],
+        }
+      : { ...emptyForm, categoryId: categories[0]?.id || "" }
   );
   const [loading, setLoading] = useState(false);
 
@@ -130,18 +139,26 @@ export function ProductForm({
         (v) => v.size.trim() && v.price.trim()
       );
 
+      const primaryVariant = validVariants[0];
+      const basePrice = primaryVariant ? parseFloat(primaryVariant.price) : parseFloat(form.price);
+      const baseDiscountPrice = primaryVariant
+        ? (primaryVariant.discountPrice ? parseFloat(primaryVariant.discountPrice) : null)
+        : (form.discountPrice ? parseFloat(form.discountPrice) : null);
+      const baseSize = primaryVariant ? primaryVariant.size.trim() : (form.size || "100ml");
+      const baseStock = validVariants.length > 0
+        ? validVariants.reduce((s, v) => s + (parseInt(v.stock, 10) || 0), 0)
+        : parseInt(form.stock, 10);
+
       const payload = {
         name: form.name,
         description: form.description,
-        price: parseFloat(form.price),
-        discountPrice: form.discountPrice
-          ? parseFloat(form.discountPrice)
-          : null,
+        price: basePrice,
+        discountPrice: baseDiscountPrice,
         brand: form.brand,
-        size: form.size || (validVariants[0]?.size || "100ml"),
+        size: baseSize,
         fragranceType: form.fragranceType,
         sku: form.sku,
-        stock: parseInt(form.stock, 10),
+        stock: baseStock,
         categoryId: form.categoryId,
         isFeatured: form.isFeatured,
         isBestSeller: form.isBestSeller,

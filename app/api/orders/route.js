@@ -179,9 +179,12 @@ export async function POST(req) {
         items: {
           create: body.items.map((i) => ({
             productId: i.productId,
-            name: i.name,
-            price: i.price,
-            quantity: i.quantity,
+            name:
+              i.size && !String(i.name).includes(`(${i.size})`)
+                ? `${i.name} (${i.size})`
+                : i.name,
+            price: Number(i.price),
+            quantity: Number(i.quantity) || 1,
           })),
         },
       },

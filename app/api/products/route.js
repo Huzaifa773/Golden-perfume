@@ -63,7 +63,7 @@ export async function GET(req) {
         include: {
           category: true,
           images: { orderBy: { position: "asc" } },
-          variants: { orderBy: { position: "asc" } }, // <-- Variants include
+          variants: { orderBy: [{ position: "asc" }, { price: "asc" }] }, // <-- Variants include
         },
       }),
       prisma.product.count({ where }),
@@ -202,9 +202,31 @@ export async function POST(req) {
         Math.floor(Math.random() * 900 + 100);
 
     // ---------- VARIANTS EXTRACT ----------
-    const variants = Array.isArray(body.variants)
-      ? body.variants.filter((v) => v.size && v.price)
+    const rawVariants = Array.isArray(body.variants)
+      ? body.variants.filter((v) => v && v.size && String(v.size).trim() && (v.price !== undefined && v.price !== null && v.price !== ""))
       : [];
+
+    const variants = rawVariants.map((v, i) => ({
+      size: String(v.size).trim(),
+      price: Number(v.price),
+      discountPrice: v.discountPrice && Number(v.discountPrice) > 0 ? Number(v.discountPrice) : null,
+      stock: v.stock !== undefined && v.stock !== null ? Math.max(0, parseInt(v.stock, 10)) : 0,
+      position: i,
+    }));
+
+    // Synchronize base product values with primary variant to prevent any size ↔ price mismatch!
+    let basePrice = Number(body.price);
+    let baseDiscountPrice = body.discountPrice ? Number(body.discountPrice) : null;
+    let baseSize = body.size || "100ml";
+    let baseStock = Number(body.stock) || 20;
+
+    if (variants.length > 0) {
+      basePrice = variants[0].price;
+      baseDiscountPrice = variants[0].discountPrice;
+      baseSize = variants[0].size;
+      const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
+      baseStock = totalStock > 0 ? totalStock : baseStock;
+    }
 
     // ---------- CREATE PRODUCT ----------
     const product = await prisma.product.create({
@@ -213,12 +235,12 @@ export async function POST(req) {
         slug,
         sku,
         description: body.description || "An artisanal luxury formulation.",
-        price: Number(body.price),
-        discountPrice: body.discountPrice ? Number(body.discountPrice) : null,
+        price: basePrice,
+        discountPrice: baseDiscountPrice,
         brand: body.brand || "Maison Charcoal",
-        size: body.size || "100ml",
+        size: baseSize,
         fragranceType: body.fragranceType || "EAU_DE_PARFUM",
-        stock: Number(body.stock) || 20,
+        stock: baseStock,
         targetPage: body.targetPage || body.category || "shop",
         notes: body.notes || null,
         isFeatured: Boolean(body.isFeatured),
@@ -231,25 +253,25 @@ export async function POST(req) {
         images: {
           create: Array.isArray(body.images)
             ? body.images
-                .filter((url) => url && url.trim())
-                .map((url, i) => ({ url, position: i }))
+                .filter((url) => url && typeof url === "string" && url.trim())
+                .map((url, i) => ({ url: url.trim(), position: i }))
             : [],
         },
 
         // Variants create
         variants: {
-          create: variants.map((v, i) => ({
-            size: v.size.trim(),
-            price: Number(v.price),
-            discountPrice: v.discountPrice ? Number(v.discountPrice) : null,
-            stock: Number(v.stock) || 0,
-            position: i,
+          create: variants.map((v) => ({
+            size: v.size,
+            price: v.price,
+            discountPrice: v.discountPrice,
+            stock: v.stock,
+            position: v.position,
           })),
         },
       },
       include: {
         images: true,
-        variants: true,
+        variants: { orderBy: [{ position: "asc" }, { price: "asc" }] },
         category: true,
       },
     });

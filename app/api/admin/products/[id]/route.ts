@@ -1,4 +1,4 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
@@ -19,11 +19,23 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   const product = await prisma.product.findUnique({
     where: { id: params.id },
-    include: { images: { orderBy: { position: "asc" } }, category: true },
+    include: {
+      images: { orderBy: { position: "asc" } },
+      category: true,
+      variants: { orderBy: [{ position: "asc" }, { price: "asc" }] },
+    },
   });
   if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
   return NextResponse.json({ product });
 }
+
+const variantUpdateSchema = z.object({
+  size: z.string().min(1),
+  price: z.number().positive(),
+  discountPrice: z.number().positive().nullable().optional(),
+  stock: z.number().int().min(0).default(0),
+  position: z.number().int().min(0).optional(),
+});
 
 const updateSchema = z.object({
   name: z.string().min(2).optional(),
@@ -36,11 +48,14 @@ const updateSchema = z.object({
   sku: z.string().min(2).optional(),
   stock: z.number().int().min(0).optional(),
   categoryId: z.string().optional(),
+  targetPage: z.string().optional(),
   isFeatured: z.boolean().optional(),
   isBestSeller: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
   isActive: z.boolean().optional(),
-  images: z.array(z.string().url()).optional(),
+  images: z.array(z.string()).optional(),
+  variants: z.array(variantUpdateSchema).optional(),
+  notes: z.any().optional(),
 });
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
@@ -52,22 +67,69 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.errors[0]?.message || "Invalid input" }, { status: 400 });
   }
-  const { images, ...data } = parsed.data;
+  const { images, variants, ...data } = parsed.data;
 
   const product = await prisma.product.findUnique({ where: { id: params.id } });
   if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
 
-  if (images) {
-    await prisma.productImage.deleteMany({ where: { productId: params.id } });
+  let basePrice = data.price;
+  let baseDiscountPrice = data.discountPrice;
+  let baseSize = data.size;
+  let baseStock = data.stock;
+
+  if (variants && variants.length > 0) {
+    basePrice = variants[0].price;
+    baseDiscountPrice = variants[0].discountPrice ?? null;
+    baseSize = variants[0].size;
+    const totalVariantStock = variants.reduce((sum, v) => sum + v.stock, 0);
+    baseStock = totalVariantStock > 0 ? totalVariantStock : (data.stock ?? product.stock);
   }
 
-  const updated = await prisma.product.update({
+  await prisma.$transaction(async (tx) => {
+    if (images) {
+      await tx.productImage.deleteMany({ where: { productId: params.id } });
+      if (images.length > 0) {
+        await tx.productImage.createMany({
+          data: images.map((url, i) => ({ productId: params.id, url, position: i })),
+        });
+      }
+    }
+
+    if (variants) {
+      await tx.productVariant.deleteMany({ where: { productId: params.id } });
+      if (variants.length > 0) {
+        await tx.productVariant.createMany({
+          data: variants.map((v, i) => ({
+            productId: params.id,
+            size: v.size.trim(),
+            price: v.price,
+            discountPrice: v.discountPrice ?? null,
+            stock: v.stock,
+            position: v.position ?? i,
+          })),
+        });
+      }
+    }
+
+    await tx.product.update({
+      where: { id: params.id },
+      data: {
+        ...data,
+        price: basePrice,
+        discountPrice: baseDiscountPrice,
+        size: baseSize,
+        stock: baseStock,
+      },
+    });
+  });
+
+  const updated = await prisma.product.findUnique({
     where: { id: params.id },
-    data: {
-      ...data,
-      ...(images ? { images: { create: images.map((url, i) => ({ url, position: i })) } } : {}),
+    include: {
+      images: { orderBy: { position: "asc" } },
+      category: true,
+      variants: { orderBy: [{ position: "asc" }, { price: "asc" }] },
     },
-    include: { images: true, category: true },
   });
 
   return NextResponse.json({ product: updated });
@@ -92,4 +154,3 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   await prisma.product.delete({ where: { id: params.id } });
   return NextResponse.json({ success: true });
 }
-

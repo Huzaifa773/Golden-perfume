@@ -172,38 +172,46 @@ function AddProductForm() {
       );
 
       // Valid variants filter karein
-      const validVariants = variants.filter(
-        (v) => v.size.trim() && v.price.trim()
-      );
+      const validVariants = variants
+        .filter((v) => v.size.trim() && v.price.trim())
+        .map((v, i) => ({
+          size: v.size.trim(),
+          price: Number(v.price),
+          discountPrice: v.discountPrice && Number(v.discountPrice) > 0 ? Number(v.discountPrice) : null,
+          stock: Number(v.stock) || 0,
+          position: i,
+        }));
+
+      const primaryVariant = validVariants[0];
+      const basePrice = primaryVariant ? primaryVariant.price : Number(formData.price);
+      const baseDiscountPrice = primaryVariant
+        ? primaryVariant.discountPrice
+        : (formData.discountPrice ? Number(formData.discountPrice) : null);
+      const baseSize = primaryVariant ? primaryVariant.size : (formData.size || "100ml");
+      const totalStock = validVariants.length > 0
+        ? validVariants.reduce((s, v) => s + v.stock, 0)
+        : (Number(formData.stock) || 20);
 
       const payload = {
-        name: formData.name,
-        price: Number(formData.price),
-        discountPrice: formData.discountPrice
-          ? Number(formData.discountPrice)
-          : null,
+        name: formData.name.trim(),
+        price: basePrice,
+        discountPrice: baseDiscountPrice,
         category: formData.category,
         targetPage: formData.targetPage,
-        brand: formData.brand,
-        size: formData.size,
+        brand: formData.brand.trim() || "Maison Charcoal",
+        size: baseSize,
         fragranceType: formData.fragranceType,
-        stock: Number(formData.stock) || 20,
+        stock: totalStock,
         description: formData.description || "An artisanal luxury formulation.",
         images: images,
         notes: {
-          top: formData.topNotes.split(",").map((s) => s.trim()),
-          heart: formData.heartNotes.split(",").map((s) => s.trim()),
-          base: formData.baseNotes.split(",").map((s) => s.trim()),
+          top: formData.topNotes.split(",").map((s) => s.trim()).filter(Boolean),
+          heart: formData.heartNotes.split(",").map((s) => s.trim()).filter(Boolean),
+          base: formData.baseNotes.split(",").map((s) => s.trim()).filter(Boolean),
         },
         isFeatured: Boolean(formData.isFeatured),
         isBestSeller: Boolean(formData.isBestSeller),
-        variants: validVariants.map((v, i) => ({
-          size: v.size.trim(),
-          price: Number(v.price),
-          discountPrice: v.discountPrice ? Number(v.discountPrice) : null,
-          stock: Number(v.stock) || 0,
-          position: i,
-        })),
+        variants: validVariants,
       };
 
       const res = await fetch("/api/products", {

@@ -141,30 +141,47 @@ export default function ProductDetailPage() {
           },
         ];
 
+  // Current active variant's exact price and stock
+  const activeVariant = selectedVariant || variants[0];
   const currentPrice =
-    selectedVariant?.discountPrice || selectedVariant?.price || product.price;
-  const originalPrice = selectedVariant?.price || product.price;
-  const hasDiscount = selectedVariant?.discountPrice;
+    activeVariant && activeVariant.discountPrice && Number(activeVariant.discountPrice) > 0
+      ? Number(activeVariant.discountPrice)
+      : Number(activeVariant?.price ?? product.price);
 
-  // ✅ Cart mein add karne se pehle product object prepare karein
+  const originalPrice = Number(activeVariant?.price ?? product.price);
+  const hasDiscount = currentPrice < originalPrice;
+  const currentStock = activeVariant?.stock !== undefined ? Number(activeVariant.stock) : Number(product.stock || 0);
+
+  // Cart object accurately bound to the active variant
   const productForCart = {
     ...product,
-    images: images, // Normalized images array
-    price: selectedVariant?.price || product.price,
-    discountPrice: selectedVariant?.discountPrice || null,
-    size: selectedVariant?.size || product.size,
-    selectedVariantId: selectedVariant?.id || null,
+    images: images,
+    price: Number(activeVariant?.price ?? product.price),
+    discountPrice: activeVariant?.discountPrice ? Number(activeVariant.discountPrice) : null,
+    size: activeVariant?.size || product.size || "100ml",
+    selectedVariantId: activeVariant?.id || null,
+    stock: currentStock,
+    variants: variants,
   };
 
   const handleAddToCart = async () => {
+    if (currentStock <= 0) {
+      alertToast(`Sorry, ${activeVariant?.size || "this size"} is currently out of stock.`, "error");
+      return;
+    }
+
     addToCart(
       productForCart,
       quantity,
-      selectedVariant?.size || product.size
+      activeVariant?.size || product.size
     );
+
+    setAddedToast(true);
+    setTimeout(() => setAddedToast(false), 2200);
+
     const viewCart = await alertAddToCart({
-      name: product.name,
-      price: currentPrice,
+      name: `${product.name} (${activeVariant?.size || product.size})`,
+      price: currentPrice * quantity,
       image: images[0],
     });
     if (viewCart) {
@@ -173,10 +190,15 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
+    if (currentStock <= 0) {
+      alertToast(`Sorry, ${activeVariant?.size || "this size"} is currently out of stock.`, "error");
+      return;
+    }
+
     addToCart(
       productForCart,
       quantity,
-      selectedVariant?.size || product.size
+      activeVariant?.size || product.size
     );
     router.push("/checkout");
   };

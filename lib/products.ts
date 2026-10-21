@@ -46,6 +46,7 @@ export async function getFilteredProducts(filters: ProductFilters) {
       include: {
         images: { orderBy: { position: "asc" }, take: 1 },
         category: { select: { name: true, slug: true } },
+        variants: { orderBy: [{ position: "asc" }, { price: "asc" }] },
         reviews: { select: { rating: true } },
       },
     }),

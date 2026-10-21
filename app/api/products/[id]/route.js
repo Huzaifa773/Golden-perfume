@@ -1,5 +1,7 @@
 // app/api/products/[id]/route.js
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +13,6 @@ export async function GET(req, { params }) {
   try {
     const { id } = params;
 
-    // Prisma se product fetch karein
     const product = await prisma.product.findFirst({
       where: {
         OR: [{ id: id }, { slug: id }],
@@ -19,7 +20,7 @@ export async function GET(req, { params }) {
       include: {
         category: true,
         images: { orderBy: { position: "asc" } },
-        variants: { orderBy: { position: "asc" } },
+        variants: { orderBy: [{ position: "asc" }, { price: "asc" }] },
       },
     });
 
@@ -52,20 +53,22 @@ export async function GET(req, { params }) {
       notes: product.notes,
       targetPage: product.targetPage,
 
-      // Category (string name)
-      category: product.category?.name || product.category?.slug || "Perfume",
-      categorySlug: product.category?.slug || null,
+      // Category
+      category: product.category?.slug || product.category?.name || "men",
+      categoryName: product.category?.name || "Men's Perfume",
+      categoryId: product.categoryId,
 
       // Images (array of URLs)
       images: product.images.map((img) => img.url),
 
-      // Variants (array of objects)
-      variants: product.variants.map((v) => ({
+      // Variants (array of objects strictly sorted by position)
+      variants: product.variants.map((v, idx) => ({
         id: v.id,
         size: v.size,
         price: Number(v.price),
         discountPrice: v.discountPrice ? Number(v.discountPrice) : null,
         stock: v.stock,
+        position: v.position ?? idx,
       })),
 
       rating: 5,
@@ -85,16 +88,22 @@ export async function GET(req, { params }) {
 }
 
 // ============================================================
-// PUT — Update product (admin only)
+// PUT — Update product with variants (Admin)
 // ============================================================
 export async function PUT(req, { params }) {
   try {
+    const session = await getServerSession(authOptions);
+    const userRole = session?.user?.role?.toUpperCase();
+    if (!session?.user || userRole !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
     const { id } = params;
     const body = await req.json();
 
-    // Check if product exists
     const existing = await prisma.product.findUnique({
       where: { id },
+      include: { variants: true },
     });
 
     if (!existing) {
@@ -104,84 +113,141 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // ---------- VARIANTS HANDLE ----------
-    const variants = Array.isArray(body.variants) ? body.variants : null;
-
-    // Agar variants bheje gaye hain, toh pehle purane delete karein
-    if (variants) {
-      await prisma.productVariant.deleteMany({
-        where: { productId: id },
+    // ---------- CATEGORY RESOLUTION ----------
+    let categoryId = existing.categoryId;
+    if (body.category) {
+      const catSlug = body.category.toLowerCase().trim();
+      let category = await prisma.category.findFirst({
+        where: {
+          OR: [
+            { slug: catSlug },
+            { name: { contains: body.category } },
+          ],
+        },
       });
+
+      if (!category) {
+        const catName = body.category.charAt(0).toUpperCase() + body.category.slice(1);
+        category = await prisma.category.create({
+          data: {
+            name: catName,
+            slug: catSlug,
+          },
+        });
+      }
+      categoryId = category.id;
     }
 
-    // ---------- IMAGES HANDLE ----------
-    const images = Array.isArray(body.images) ? body.images : null;
+    // ---------- VARIANTS HANDLING ----------
+    const incomingVariants = Array.isArray(body.variants) ? body.variants : null;
+    let validVariants = null;
 
-    if (images) {
-      await prisma.productImage.deleteMany({
-        where: { productId: id },
-      });
+    if (incomingVariants) {
+      validVariants = incomingVariants
+        .filter((v) => v && v.size && String(v.size).trim() && (v.price !== undefined && v.price !== null && v.price !== ""))
+        .map((v, i) => ({
+          size: String(v.size).trim(),
+          price: Number(v.price),
+          discountPrice: v.discountPrice && Number(v.discountPrice) > 0 ? Number(v.discountPrice) : null,
+          stock: v.stock !== undefined && v.stock !== null ? Math.max(0, parseInt(v.stock, 10)) : 0,
+          position: i,
+        }));
     }
 
-    // ---------- UPDATE PRODUCT ----------
-    const updated = await prisma.product.update({
+    // ---------- IMAGES HANDLING ----------
+    const incomingImages = Array.isArray(body.images) ? body.images : null;
+    let validImages = null;
+    if (incomingImages) {
+      validImages = incomingImages
+        .filter((url) => typeof url === "string" && url.trim().length > 0)
+        .map((url, i) => ({ url: url.trim(), position: i }));
+    }
+
+    // If variants exist, synchronize base product values to match variant 0!
+    // This completely eliminates size ↔ price mismatch between base product and variants.
+    let baseSize = body.size ?? existing.size;
+    let basePrice = body.price !== undefined ? Number(body.price) : existing.price;
+    let baseDiscountPrice =
+      body.discountPrice !== undefined
+        ? body.discountPrice
+          ? Number(body.discountPrice)
+          : null
+        : existing.discountPrice;
+    let baseStock = body.stock !== undefined ? Number(body.stock) : existing.stock;
+
+    if (validVariants && validVariants.length > 0) {
+      const primaryVariant = validVariants[0];
+      baseSize = primaryVariant.size;
+      basePrice = primaryVariant.price;
+      baseDiscountPrice = primaryVariant.discountPrice;
+      const totalVariantStock = validVariants.reduce((sum, v) => sum + v.stock, 0);
+      baseStock = totalVariantStock > 0 ? totalVariantStock : (Number(body.stock) || existing.stock);
+    }
+
+    // Perform database updates
+    await prisma.$transaction(async (tx) => {
+      // 1. Update images if provided
+      if (validImages) {
+        await tx.productImage.deleteMany({ where: { productId: id } });
+        if (validImages.length > 0) {
+          await tx.productImage.createMany({
+            data: validImages.map((img) => ({
+              productId: id,
+              url: img.url,
+              position: img.position,
+            })),
+          });
+        }
+      }
+
+      // 2. Update variants if provided
+      if (validVariants) {
+        await tx.productVariant.deleteMany({ where: { productId: id } });
+        if (validVariants.length > 0) {
+          await tx.productVariant.createMany({
+            data: validVariants.map((v) => ({
+              productId: id,
+              size: v.size,
+              price: v.price,
+              discountPrice: v.discountPrice,
+              stock: v.stock,
+              position: v.position,
+            })),
+          });
+        }
+      }
+
+      // 3. Update main product record
+      await tx.product.update({
+        where: { id },
+        data: {
+          name: body.name ?? undefined,
+          description: body.description ?? undefined,
+          price: basePrice,
+          discountPrice: baseDiscountPrice,
+          brand: body.brand ?? undefined,
+          size: baseSize,
+          fragranceType: body.fragranceType ?? undefined,
+          sku: body.sku ?? undefined,
+          stock: baseStock,
+          categoryId: categoryId,
+          targetPage: body.targetPage ?? undefined,
+          isFeatured: body.isFeatured !== undefined ? Boolean(body.isFeatured) : undefined,
+          isBestSeller: body.isBestSeller !== undefined ? Boolean(body.isBestSeller) : undefined,
+          isNewArrival: body.isNewArrival !== undefined ? Boolean(body.isNewArrival) : undefined,
+          isActive: body.isActive !== undefined ? Boolean(body.isActive) : undefined,
+          notes: body.notes !== undefined ? body.notes : undefined,
+        },
+      });
+    });
+
+    // Fetch updated product with relations
+    const updated = await prisma.product.findUnique({
       where: { id },
-      data: {
-        name: body.name ?? undefined,
-        description: body.description ?? undefined,
-        price: body.price !== undefined ? Number(body.price) : undefined,
-        discountPrice:
-          body.discountPrice !== undefined
-            ? body.discountPrice
-              ? Number(body.discountPrice)
-              : null
-            : undefined,
-        brand: body.brand ?? undefined,
-        size: body.size ?? undefined,
-        fragranceType: body.fragranceType ?? undefined,
-        sku: body.sku ?? undefined,
-        stock: body.stock !== undefined ? Number(body.stock) : undefined,
-        isFeatured: body.isFeatured ?? undefined,
-        isBestSeller: body.isBestSeller ?? undefined,
-        isNewArrival: body.isNewArrival ?? undefined,
-        isActive: body.isActive ?? undefined,
-        targetPage: body.targetPage ?? undefined,
-        notes: body.notes ?? undefined,
-
-        // New images create
-        ...(images
-          ? {
-              images: {
-                create: images
-                  .filter((url) => url && url.trim())
-                  .map((url, i) => ({ url, position: i })),
-              },
-            }
-          : {}),
-
-        // New variants create
-        ...(variants
-          ? {
-              variants: {
-                create: variants
-                  .filter((v) => v.size && v.price)
-                  .map((v, i) => ({
-                    size: v.size.trim(),
-                    price: Number(v.price),
-                    discountPrice: v.discountPrice
-                      ? Number(v.discountPrice)
-                      : null,
-                    stock: Number(v.stock) || 0,
-                    position: i,
-                  })),
-              },
-            }
-          : {}),
-      },
       include: {
-        images: true,
-        variants: true,
         category: true,
+        images: { orderBy: { position: "asc" } },
+        variants: { orderBy: [{ position: "asc" }, { price: "asc" }] },
       },
     });
 
@@ -190,13 +256,19 @@ export async function PUT(req, { params }) {
       product: {
         id: updated.id,
         name: updated.name,
+        price: Number(updated.price),
+        discountPrice: updated.discountPrice ? Number(updated.discountPrice) : null,
+        size: updated.size,
+        stock: updated.stock,
         variants: updated.variants.map((v) => ({
           id: v.id,
           size: v.size,
           price: Number(v.price),
           discountPrice: v.discountPrice ? Number(v.discountPrice) : null,
           stock: v.stock,
+          position: v.position,
         })),
+        images: updated.images.map((img) => img.url),
       },
     });
   } catch (err) {
@@ -209,10 +281,16 @@ export async function PUT(req, { params }) {
 }
 
 // ============================================================
-// DELETE — Delete product (admin only)
+// DELETE — Delete product (Admin)
 // ============================================================
 export async function DELETE(req, { params }) {
   try {
+    const session = await getServerSession(authOptions);
+    const userRole = session?.user?.role?.toUpperCase();
+    if (!session?.user || userRole !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
     const { id } = params;
 
     const existing = await prisma.product.findUnique({
@@ -226,14 +304,32 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    // onDelete: Cascade ki wajah se images aur variants bhi delete ho jayenge
+    // Check if order items exist
+    const hasOrders = await prisma.orderItem.findFirst({
+      where: { productId: id },
+    });
+
+    if (hasOrders) {
+      // Soft-delete / deactivate so order history remains unbroken
+      await prisma.product.update({
+        where: { id },
+        data: { isActive: false },
+      });
+      return NextResponse.json({
+        success: true,
+        softDeleted: true,
+        message: "Product deactivated (retained for historical customer orders)",
+      });
+    }
+
+    // Hard delete with cascade on variants & images
     await prisma.product.delete({
       where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Product deleted successfully",
+      message: "Product permanently removed from boutique",
     });
   } catch (err) {
     console.error("DELETE /api/products/[id] error:", err);

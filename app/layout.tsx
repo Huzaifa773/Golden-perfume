@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloating } from "@/components/WhatsAppFloating";
+import { Page3DTransition } from "@/components/Page3DTransition";
 import "sweetalert2/dist/sweetalert2.min.css";
 
 const playfair = Playfair_Display({
@@ -37,10 +38,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable} dark`}>
-      <body className="flex min-h-screen flex-col bg-obsidian-950 text-neutral-100 selection:bg-gold/30 selection:text-gold antialiased">
+      <body className="flex min-h-screen flex-col bg-obsidian-950 text-neutral-100 selection:bg-gold/30 selection:text-gold antialiased overflow-x-hidden">
         <Providers>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <Page3DTransition>
+            <main className="flex-1">{children}</main>
+          </Page3DTransition>
           <Footer />
           <WhatsAppFloating />
         </Providers>
