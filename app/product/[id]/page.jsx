@@ -1,7 +1,7 @@
 // app/product/[id]/page.jsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { addToCart } from "@/lib/cart";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductReviews } from "@/components/ProductReviews";
 import { alertAddToCart } from "@/lib/alerts";
 
 export default function ProductDetailPage() {
@@ -35,6 +36,13 @@ export default function ProductDetailPage() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [addedToast, setAddedToast] = useState(false);
+  const [ratingStats, setRatingStats] = useState({ avg: 5, count: 0 });
+
+  const handleRatingUpdate = useCallback((avg, count) => {
+    setRatingStats((prev) =>
+      prev.avg === avg && prev.count === count ? prev : { avg, count }
+    );
+  }, []);
 
   useEffect(() => {
     async function loadProduct() {
@@ -204,10 +212,10 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-neutral-100 py-10 px-4 md:px-8">
+    <div className="min-h-screen bg-obsidian-950 text-neutral-100 py-6 sm:py-10 px-3 sm:px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-neutral-400 mb-8 overflow-x-auto whitespace-nowrap">
+        <nav className="flex items-center gap-2 text-xs text-neutral-400 mb-6 sm:mb-8 overflow-x-auto whitespace-nowrap">
           <Link href="/" className="hover:text-gold transition-colors">
             Home
           </Link>
@@ -225,7 +233,7 @@ export default function ProductDetailPage() {
           </span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Left Column: Image Gallery */}
           <div className="flex flex-col gap-4">
             <motion.div
@@ -233,7 +241,7 @@ export default function ProductDetailPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full aspect-square sm:aspect-[4/5] rounded-3xl overflow-hidden bg-obsidian-900 border border-gold/30 shadow-2xl group"
+              className="relative w-full max-h-[380px] sm:max-h-none aspect-square sm:aspect-[4/5] rounded-2xl sm:rounded-3xl overflow-hidden bg-obsidian-900 border border-gold/30 shadow-2xl group mx-auto"
             >
               <Image
                 src={images[activeImgIdx] || images[0]}
@@ -286,10 +294,10 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-1.5 text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
                   <Star size={13} className="fill-amber-400 text-amber-400" />
                   <span className="font-bold text-xs text-amber-200">
-                    {product.rating ? product.rating.toFixed(1) : "5.0"}
+                    {ratingStats.count > 0 ? ratingStats.avg.toFixed(1) : (product.rating ? product.rating.toFixed(1) : "5.0")}
                   </span>
                   <span className="text-[10px] text-neutral-400">
-                    ({product.reviewCount || 1} connoisseurs)
+                    ({ratingStats.count > 0 ? `${ratingStats.count} connoisseur${ratingStats.count === 1 ? "" : "s"}` : (product.reviewCount ? `${product.reviewCount} connoisseurs` : "New")})
                   </span>
                 </div>
               </div>
@@ -500,6 +508,13 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
+        {/* User Reviews Section (Filtered by Product ID) */}
+        <ProductReviews
+          productId={product.id}
+          productName={product.name}
+          onRatingUpdate={handleRatingUpdate}
+        />
+
         {relatedProducts.length > 0 && (
           <div className="mt-24 pt-16 border-t border-neutral-800">
             <div className="text-center max-w-xl mx-auto mb-10">
@@ -510,7 +525,7 @@ export default function ProductDetailPage() {
                 Complementary Luxury Scents
               </h3>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {relatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

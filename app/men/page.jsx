@@ -103,17 +103,17 @@ function MenContent() {
 
         {/* Product Grid (20 cards per page) */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {[...Array(8)].map((_, i) => (
               <div
                 key={i}
-                className="h-96 rounded-2xl bg-neutral-900/60 border border-neutral-800 animate-pulse"
+                className="h-64 sm:h-96 rounded-2xl bg-neutral-900/60 border border-neutral-800 animate-pulse"
               />
             ))}
           </div>
         ) : products.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

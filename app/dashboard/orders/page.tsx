@@ -1,4 +1,4 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import Link from "next/link";
@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
-import { Truck, ArrowRight, Package } from "lucide-react";
+import { ArrowRight, Package } from "lucide-react";
 
 const STATUS_STYLES: Record<string, string> = {
   PENDING: "bg-amber-950/80 text-amber-400 border-amber-500/40",
@@ -30,14 +30,8 @@ export default async function DashboardOrdersPage() {
       <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
         <div>
           <span className="text-[11px] uppercase tracking-widest text-gold font-semibold">Your Acquisitions</span>
-          <h2 className="font-serif text-2xl font-bold text-ivory mt-0.5">Order Dossier</h2>
+          <h2 className="font-serif text-2xl font-bold text-ivory mt-0.5">Order Confirmation</h2>
         </div>
-        <Link
-          href="/track-order"
-          className="btn-secondary py-2 px-4 text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5"
-        >
-          <Truck size={14} /> Live Tracker
-        </Link>
       </div>
 
       {orders.length === 0 ? (
@@ -53,7 +47,7 @@ export default async function DashboardOrdersPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {orders.map((o) => (
+          {orders.map((o: any) => (
             <div
               key={o.id}
               className="rounded-xl border border-neutral-800 bg-obsidian-800/60 p-5 space-y-4 transition-all duration-300 hover:border-gold/40"
@@ -82,7 +76,7 @@ export default async function DashboardOrdersPage() {
 
               {/* Order Items Snapshot */}
               <div className="space-y-1.5 text-xs text-neutral-300">
-                {o.items.map((item) => (
+                {o.items.map((item: any) => (
                   <div key={item.id} className="flex justify-between items-center text-xs">
                     <span>
                       {item.name} <span className="text-neutral-500 font-mono">Ã— {item.quantity}</span>

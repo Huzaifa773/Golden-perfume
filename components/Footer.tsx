@@ -8,20 +8,20 @@ export function Footer() {
       {/* Decorative Golden Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-gold/10 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="mx-auto max-w-7xl px-4 md:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-neutral-800">
+      <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-8 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 pb-12 border-b border-neutral-800">
           {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="inline-flex items-center gap-2.5">
-              <div className="h-10 w-10 rounded-full border border-gold/60 bg-gold/20 flex items-center justify-center text-gold font-serif font-bold text-lg shadow-gold-glow">
+          <div className="sm:col-span-2 space-y-4">
+            <Link href="/" className="inline-flex items-center gap-2 sm:gap-2.5">
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-gold/60 bg-gold/20 flex items-center justify-center text-gold font-serif font-bold text-base sm:text-lg shadow-gold-glow shrink-0">
                 MC
               </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-xl tracking-[0.16em] font-bold text-ivory">
+              <div className="flex flex-col min-w-0">
+                <span className="font-serif text-lg sm:text-xl tracking-[0.12em] sm:tracking-[0.16em] font-bold text-ivory">
                   MAISON <span className="text-gold">CHARCOAL</span>
                 </span>
-                <span className="text-[9px] uppercase tracking-[0.3em] text-neutral-400">
-                  Haute Parfumerie & Pure Attars
+                <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-neutral-400">
+                  Haute Parfumerie &amp; Pure Attars
                 </span>
               </div>
             </Link>
@@ -102,8 +102,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-neutral-400 hover:text-gold transition-colors">
-                  Track My Order & Parcel
+                <Link href="/dashboard/orders" className="text-neutral-400 hover:text-gold transition-colors">
+                  My Orders &amp; Account
                 </Link>
               </li>
               <li>
@@ -130,15 +130,15 @@ export function Footer() {
             <div className="flex flex-col gap-2 text-xs">
               <span className="px-3 py-1.5 rounded-lg bg-obsidian-900 border border-gold/30 text-gold font-medium flex items-center justify-between">
                 <span>Easypaisa</span>
-                <span className="text-[10px] text-neutral-400">Mobile Account</span>
+                <span className="text-[10px] text-neutral-400">0314-8759109</span>
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-obsidian-900 border border-gold/30 text-gold font-medium flex items-center justify-between">
                 <span>JazzCash</span>
-                <span className="text-[10px] text-neutral-400">Instant Pay</span>
+                <span className="text-[10px] text-neutral-400">0314-8759109</span>
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-obsidian-900 border border-gold/30 text-gold font-medium flex items-center justify-between">
                 <span>Bank Transfer</span>
-                <span className="text-[10px] text-neutral-400">Direct Deposit</span>
+                <span className="text-[10px] text-neutral-400">0000000000000</span>
               </span>
             </div>
           </div>

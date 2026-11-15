@@ -48,12 +48,13 @@ export function ReviewForm({ productId }: { productId: string }) {
       if (!res.ok) throw new Error(data.error || "Failed to submit review");
 
       await alertSuccess(
-        "Review Applauded",
-        "Your review has been successfully submitted. Thank you for contributing to the Maison Charcoal community."
+        "Review Published",
+        "Your review has been successfully submitted. Thank you for contributing to Maison Charcoal.",
+        "Understood"
       );
       setComment("");
       setRating(5);
-      router.refresh();
+      router.push("/");
     } catch (err: any) {
       alertError("Review Failed", err.message || "Something went wrong while posting your review");
     } finally {

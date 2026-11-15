@@ -417,6 +417,7 @@ enum PaymentMethod {
   JAZZCASH
   EASYPAISA
   SAFEPAY
+  TID
 }
 
 enum PaymentTransactionStatus {

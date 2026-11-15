@@ -5,12 +5,10 @@ import { getServerSession } from "next-auth";
 import {
   User,
   Package,
-  Heart,
   MapPin,
   Settings,
   Sparkles,
   ArrowLeft,
-  Truck,
   Award,
   XCircle,
 } from "lucide-react";
@@ -18,9 +16,7 @@ import { authOptions } from "@/lib/auth";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "VIP Overview", icon: User },
-  { href: "/dashboard/orders", label: "Order Dossier", icon: Package },
-  { href: "/track-order", label: "Track Shipment", icon: Truck },
-  { href: "/wishlist", label: "Saved Creations", icon: Heart },
+  { href: "/dashboard/orders", label: "Order Confirmation", icon: Package },
   { href: "/dashboard/addresses", label: "Delivery Addresses", icon: MapPin },
   { href: "/dashboard/settings", label: "Patron Settings", icon: Settings },
   // ✅ NAYA: Cancel Order

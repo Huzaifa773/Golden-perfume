@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import {
   LayoutDashboard,
   Package,
-  FolderTree,
   Users,
   ShoppingCart,
   CreditCard,
@@ -16,12 +15,10 @@ import {
   X,
 } from "lucide-react";
 import { authOptions } from "@/lib/auth";
-import { useState } from "react"; // Note: Agar "use client" nahi hai toh isay hatayein, lekin hamburger ke liye "use client" chahiye hoga.
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/products", label: "Catalog Products", icon: Package },
-  { href: "/admin/categories", label: "Fragrance Categories", icon: FolderTree },
   { href: "/admin/orders", label: "Customer Orders", icon: ShoppingCart },
   { href: "/admin/payments", label: "Payment Verification", icon: CreditCard },
   { href: "/admin/users", label: "Patron Registry", icon: Users },

@@ -43,9 +43,9 @@ export function PaymentsTable({ payments }: { payments: PaymentRow[] }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-neutral-200 bg-white">
+    <div className="overflow-x-auto rounded-sm border border-black-200 bg-black">
       <table className="w-full min-w-[800px] text-sm">
-        <thead className="border-b border-neutral-200 bg-neutral-50 text-left text-xs uppercase tracking-wide text-neutral-500">
+        <thead className="border-b border-neutral-200 bg-black-50 text-left text-xs uppercase tracking-wide text-gold-500">
           <tr>
             <th className="px-4 py-3">Order</th>
             <th className="px-4 py-3">Customer</th>
@@ -58,8 +58,8 @@ export function PaymentsTable({ payments }: { payments: PaymentRow[] }) {
         </thead>
         <tbody>
           {rows.map((p) => (
-            <tr key={p.id} className="border-b border-neutral-100">
-              <td className="px-4 py-3 font-medium text-charcoal">{p.order.orderNumber}</td>
+            <tr key={p.id} className="border-b border-neutral-100 text-white">
+              <td className="px-4 py-3 font-medium text-white">{p.order.orderNumber}</td>
               <td className="px-4 py-3">{p.order.customerName}</td>
               <td className="px-4 py-3">{p.method.replace("_", " ")}</td>
               <td className="px-4 py-3">{formatCurrency(Number(p.amount))}</td>

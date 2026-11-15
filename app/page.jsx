@@ -181,7 +181,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {[
             {
               title: "Men's Royal Fragrances",
@@ -219,33 +219,33 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
               whileHover={{ y: -8 }}
-              className="group relative rounded-2xl overflow-hidden border border-neutral-800 hover:border-gold/60 shadow-luxury hover:shadow-gold-card transition-all duration-500 aspect-[3/4] flex flex-col justify-end p-6"
+              className="group relative rounded-2xl overflow-hidden border border-neutral-800 hover:border-gold/60 shadow-luxury hover:shadow-gold-card transition-all duration-500 aspect-[3/4] flex flex-col justify-end p-3.5 sm:p-6"
             >
               <Image
                 src={cat.image}
                 alt={cat.title}
                 fill
-                sizes="(max-width: 640px) 100vw, 25vw"
+                sizes="(max-width: 640px) 50vw, 25vw"
                 className="object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/60 to-transparent" />
 
               <div className="relative z-10">
-                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gold/20 text-gold border border-gold/40 mb-2">
+                <span className="inline-block px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-gold/20 text-gold border border-gold/40 mb-1.5 sm:mb-2">
                   {cat.badge}
                 </span>
-                <h3 className="font-serif text-xl font-bold text-ivory group-hover:text-gold transition-colors">
+                <h3 className="font-serif text-sm sm:text-xl font-bold text-ivory group-hover:text-gold transition-colors line-clamp-1 sm:line-clamp-none">
                   {cat.title}
                 </h3>
-                <p className="text-xs text-neutral-300 mt-1 leading-relaxed line-clamp-2">
+                <p className="text-xs text-neutral-300 mt-1 leading-relaxed line-clamp-2 hidden sm:block">
                   {cat.desc}
                 </p>
                 <Link
                   href={cat.href}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold mt-3 group-hover:translate-x-1 transition-transform"
+                  className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-gold mt-2 sm:mt-3 group-hover:translate-x-1 transition-transform"
                 >
-                  <span>Explore Collection</span>
-                  <ChevronRight size={14} />
+                  <span>Explore</span>
+                  <ChevronRight size={13} />
                 </Link>
               </div>
             </motion.div>
@@ -362,7 +362,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {featuredAttars.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

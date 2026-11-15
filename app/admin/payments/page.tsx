@@ -24,8 +24,8 @@ export default async function AdminPaymentsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-serif text-3xl text-charcoal">Payments</h1>
-      <p className="text-sm text-neutral-500">
+      <h1 className="font-serif text-3xl tracking-widest text-gold">Payments</h1>
+      <p className="text-sm text-White-500">
         Bank transfer payments require manual review â€” approve only after confirming the funds actually arrived.
       </p>
       <PaymentsTable payments={rows} />

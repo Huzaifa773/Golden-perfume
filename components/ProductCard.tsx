@@ -126,7 +126,7 @@ export function ProductCard({ product }: ProductCardProps) {
       return;
     }
 
-    addToCart(product, 1, displaySize);
+    (addToCart as any)(product, 1, displaySize);
     setAdded(true);
     alertToast(`"${product.name}" (${displaySize}) added to your bag`, "success");
     setTimeout(() => setAdded(false), 2000);
@@ -259,35 +259,35 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Content Container */}
         <div
           style={{ transform: "translateZ(20px)" }}
-          className="p-4 sm:p-5 flex flex-col flex-1 justify-between"
+          className="p-3 sm:p-5 flex flex-col flex-1 justify-between gap-2"
         >
           <div>
-            <div className="flex items-center justify-between text-[11px] mb-1.5">
-              <span className="uppercase tracking-widest text-gold/80 font-medium">
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px] mb-1">
+              <span className="uppercase tracking-widest text-gold/80 font-medium truncate max-w-[90px] sm:max-w-none">
                 {categoryLabel}
               </span>
-              <div className="flex items-center gap-1 text-amber-400">
-                <Star size={12} className="fill-amber-400 text-amber-400" />
-                <span className="font-semibold text-neutral-300 text-xs">
+              <div className="flex items-center gap-1 text-amber-400 shrink-0">
+                <Star size={11} className="fill-amber-400 text-amber-400" />
+                <span className="font-semibold text-neutral-300 text-[11px] sm:text-xs">
                   {product.rating ? product.rating.toFixed(1) : "5.0"}
                 </span>
               </div>
             </div>
 
             <Link href={productUrl}>
-              <h3 className="font-serif text-base sm:text-lg font-semibold text-ivory group-hover:text-gold transition-colors line-clamp-1">
+              <h3 className="font-serif text-xs sm:text-base font-semibold text-ivory group-hover:text-gold transition-colors line-clamp-1">
                 {product.name}
               </h3>
             </Link>
 
-            <p className="mt-1 text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+            <p className="mt-1 text-[11px] sm:text-xs text-neutral-400 line-clamp-2 leading-relaxed hidden xs:block">
               {product.description ||
                 "A masterfully blended luxury fragrance crafted with rare natural essences."}
             </p>
 
             {/* Interactive Size Selector on Card (Task 2) */}
             {hasVariants && variants.length > 1 && (
-              <div className="mt-3 flex items-center gap-1.5 flex-wrap">
+              <div className="mt-2 sm:mt-3 flex items-center gap-1 sm:gap-1.5 flex-wrap">
                 {variants.map((v, idx) => {
                   const isSelected = idx === selectedVariantIdx;
                   return (
@@ -299,7 +299,7 @@ export function ProductCard({ product }: ProductCardProps) {
                         e.stopPropagation();
                         setSelectedVariantIdx(idx);
                       }}
-                      className={`px-2 py-0.5 rounded text-[10px] font-medium transition-all ${
+                      className={`px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-medium transition-all ${
                         isSelected
                           ? "bg-gold text-obsidian-950 font-semibold shadow-gold-glow"
                           : "bg-obsidian-800/80 text-neutral-300 hover:text-gold hover:bg-obsidian-700/80 border border-neutral-800"
@@ -315,26 +315,26 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Pricing & Quick Add Section */}
-          <div className="mt-4 pt-3 border-t border-neutral-800/80 flex items-center justify-between gap-2">
-            <div className="flex flex-col">
+          <div className="mt-2 sm:mt-4 pt-2 sm:pt-3 border-t border-neutral-800/80 flex items-center justify-between gap-1.5 sm:gap-2">
+            <div className="flex flex-col min-w-0">
               {hasDiscount ? (
-                <div className="flex items-baseline gap-2">
-                  <span className="text-base sm:text-lg font-bold text-gold tracking-tight">
+                <div className="flex flex-wrap items-baseline gap-1 sm:gap-2">
+                  <span className="text-xs sm:text-base font-bold text-gold tracking-tight whitespace-nowrap">
                     PKR {Number(displayPrice).toLocaleString()}
                   </span>
-                  <span className="text-xs text-neutral-500 line-through">
+                  <span className="text-[10px] sm:text-xs text-neutral-500 line-through whitespace-nowrap">
                     PKR {Number(originalPrice).toLocaleString()}
                   </span>
                 </div>
               ) : (
-                <span className="text-base sm:text-lg font-bold text-gold tracking-tight">
+                <span className="text-xs sm:text-base font-bold text-gold tracking-tight whitespace-nowrap">
                   PKR {Number(displayPrice).toLocaleString()}
                 </span>
               )}
-              <span className="text-[10px] text-neutral-400 flex items-center gap-1">
+              <span className="text-[9px] sm:text-[10px] text-neutral-400 flex items-center gap-1 truncate">
                 <span className="font-medium text-neutral-300">{displaySize}</span>
                 {hasVariants && variants.length > 1 && (
-                  <span className="text-gold/60">({variants.length} sizes)</span>
+                  <span className="text-gold/60">({variants.length})</span>
                 )}
               </span>
             </div>
@@ -343,7 +343,7 @@ export function ProductCard({ product }: ProductCardProps) {
               whileTap={{ scale: 0.92 }}
               onClick={handleQuickAdd}
               disabled={isOutOfStock}
-              className={`p-2.5 rounded-full border transition-all duration-300 flex items-center justify-center ${
+              className={`p-1.5 sm:p-2.5 rounded-full border transition-all duration-300 flex items-center justify-center shrink-0 ${
                 isOutOfStock
                   ? "border-neutral-800 bg-neutral-900/50 text-neutral-600 cursor-not-allowed"
                   : added
@@ -353,7 +353,7 @@ export function ProductCard({ product }: ProductCardProps) {
               title={isOutOfStock ? "Out of stock" : `Add ${displaySize} to bag`}
               aria-label={`Add ${product.name} to cart`}
             >
-              {added ? <Check size={16} /> : <ShoppingBag size={16} />}
+              {added ? <Check size={14} className="sm:w-4 sm:h-4" /> : <ShoppingBag size={14} className="sm:w-4 sm:h-4" />}
             </motion.button>
           </div>
         </div>

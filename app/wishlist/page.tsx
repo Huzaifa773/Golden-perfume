@@ -1,4 +1,4 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { redirect } from "next/navigation";
@@ -31,7 +31,7 @@ export default async function WishlistPage() {
       })
     : [];
 
-  const cards: ProductCardData[] = items.map(({ product: p }) => {
+  const cards = items.map(({ product: p }: any) => {
     const ratings = p.reviews;
     return {
       id: p.id,
@@ -41,7 +41,7 @@ export default async function WishlistPage() {
       discountPrice: p.discountPrice ? Number(p.discountPrice) : null,
       stock: p.stock,
       images: p.images,
-      avgRating: ratings.length ? ratings.reduce((s, r) => s + r.rating, 0) / ratings.length : 5,
+      avgRating: ratings.length ? ratings.reduce((s: number, r: any) => s + r.rating, 0) / ratings.length : 5,
       reviewCount: ratings.length || 1,
       isWishlisted: true,
     };
@@ -81,7 +81,7 @@ export default async function WishlistPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
-            {cards.map((p) => (
+            {cards.map((p: any) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

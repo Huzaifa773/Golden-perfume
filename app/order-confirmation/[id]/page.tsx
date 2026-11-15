@@ -1,10 +1,10 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { CheckCircle2, Truck, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
@@ -74,7 +74,7 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
           <div className="space-y-3 pt-2">
             <p className="text-xs uppercase tracking-wider text-gold font-semibold">Fragrance Items:</p>
             <div className="space-y-2 text-xs">
-              {order.items.map((item) => (
+              {order.items.map((item: any) => (
                 <div key={item.id} className="flex justify-between items-center p-3 rounded-xl bg-obsidian-800/60 border border-neutral-800">
                   <span className="text-neutral-200">
                     {item.name} <span className="text-neutral-500 font-mono">Ã— {item.quantity}</span>
@@ -139,22 +139,16 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
           <Link
-            href="/track-order"
-            className="btn-primary py-3.5 px-7 text-xs uppercase tracking-widest font-bold shadow-gold-glow flex items-center gap-2"
-          >
-            <Truck size={15} /> Track Consignment
-          </Link>
-          <Link
             href="/dashboard/orders"
-            className="btn-secondary py-3.5 px-6 text-xs uppercase tracking-wider font-semibold"
+            className="btn-primary py-3.5 px-7 text-xs uppercase tracking-widest font-bold shadow-gold-glow"
           >
             View In Dashboard
           </Link>
           <Link
             href="/products"
-            className="btn-ghost text-xs uppercase tracking-wider text-neutral-400 hover:text-gold"
+            className="btn-secondary py-3.5 px-6 text-xs uppercase tracking-wider font-semibold"
           >
-            Return to Boutique
+            Return to Shop  
           </Link>
         </div>
       </div>

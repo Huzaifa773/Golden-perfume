@@ -104,18 +104,18 @@ export function Navbar() {
             : "bg-obsidian-900/90 backdrop-blur-sm border-b border-neutral-800/80 py-3.5"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 md:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 md:px-8">
           {/* Brand Logo */}
-          <Link href="/" className="group flex items-center gap-2.5 min-w-0 shrink-0">
-            <div className="h-10 w-10 shrink-0 rounded-full border border-gold/60 bg-gradient-to-br from-gold/30 via-obsidian-900 to-obsidian-950 flex items-center justify-center text-gold font-serif text-lg font-bold shadow-gold-glow group-hover:scale-105 transition-transform duration-300">
+          <Link href="/" className="group flex items-center gap-2 min-w-0 shrink">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-full border border-gold/60 bg-gradient-to-br from-gold/30 via-obsidian-900 to-obsidian-950 flex items-center justify-center text-gold font-serif text-sm sm:text-lg font-bold shadow-gold-glow group-hover:scale-105 transition-transform duration-300">
               MC
             </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-lg sm:text-xl md:text-2xl tracking-[0.14em] font-semibold text-ivory group-hover:text-gold transition-colors whitespace-nowrap">
+            <div className="flex flex-col min-w-0">
+              <span className="font-serif text-sm sm:text-xl md:text-2xl tracking-[0.1em] sm:tracking-[0.14em] font-semibold text-ivory group-hover:text-gold transition-colors whitespace-nowrap">
                 MAISON <span className="text-gold">CHARCOAL</span>
               </span>
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-neutral-400 -mt-1">
-                Luxury Perfumes & Attars
+              <span className="text-[7px] sm:text-[9px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-neutral-400 -mt-0.5 sm:-mt-1 truncate">
+                Luxury Perfumes &amp; Attars
               </span>
             </div>
           </Link>
@@ -136,7 +136,7 @@ export function Navbar() {
           </form>
 
           {/* Right Action Icons: Cart, Auth, Mobile Menu Toggle */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Cart Icon */}
             <Link
               href="/cart"
@@ -223,10 +223,10 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <Link
                   href="/login"
-                  className="px-3.5 py-1.5 rounded-full text-xs font-medium text-neutral-300 hover:text-gold border border-neutral-700 hover:border-gold/60 transition-all duration-200"
+                  className="px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-medium text-neutral-300 hover:text-gold border border-neutral-700 hover:border-gold/60 transition-all duration-200"
                 >
                   Login
                 </Link>
